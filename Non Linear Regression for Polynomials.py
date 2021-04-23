@@ -118,42 +118,19 @@ class Non_Linear_Regression:
                 E_cv[t] += self.E_in_new(X[ind], y[ind], w=w)
             E_cv[t] = E_cv[t]/P
             t += 1
-        print(E_cv)
         return np.where(min(E_cv)==E_cv)[0][0], min(E_cv)
 
 
 
-
-
-#d = 8
-#poly = legendre(d)
-
-#x, y = points(100, e=0.5, a=-1, b=1, poly=poly)
-
-#NLR = Non_Linear_Regression(l=0.1)
-#X = NLR.transform(x, d+8)
-#w = NLR.fit(X, y, l=0)
-
-#non-linear transformation + linear regression with regularization
-#X = transform(x, d+8)
-#w = regression_with_regularization(X, y, l=0)
-
-#values to plot our target function, the legendre polynomial of order d
-#val_x = np.linspace(-1, 1, num=500)
-#val_y = leg_polynomial(val_x, poly)
-
-#values to plot our hypotesis g
-#Y = polynomial(val_x, w)
-
-k = 40
-n = 100
+k = 40 #highest degree to be tested
+n = 100 #number of points on the data set
 Ein = np.zeros(k)
 Eout = np.zeros(k)
 
 plt.figure()
 
 
-
+#creates some random points with noise out from an legendre polynomial for testing the code
 d = 20
 poly = legendre(d)
 val_x = np.linspace(-1, 1, num=500)
@@ -162,14 +139,15 @@ val_y = leg_polynomial(val_x, poly)
 x, y = points(n, e=0.1, a=-1, b=1, poly=poly)
 lambdas = np.zeros(k)
 
+#cross validates the regularization
 for i in range(k):
-    
     Reg = Non_Linear_Regression()
     X = Reg.transform(x, i)
     
     lambdas[i] = Reg.cross_validation_lambda(X, y)
 
 Reg = Non_Linear_Regression()
+#cross validates the degree of the polynomial
 K, Ecv = Reg.cross_validation_degree(x, y, k, lambdas)
 
 Reg = Non_Linear_Regression(l=lambdas[K])
@@ -179,40 +157,15 @@ Y = Reg.fit_polynomial(val_x)
 
 Eout = Reg.E_out(poly)
 
+#plot the errors
 print("Degree: ", K, "\nRegularization: ", lambdas[K], "\nE_out: ", Eout, "\nE_cv: ", Ecv)
 
+#plot everything
 plt.plot(x, y, 'o')
 plt.plot(val_x, val_y, 'r', label="Target")
 plt.plot(val_x, Y, 'g', label="Best")
 plt.xlim(-1, 1)
 plt.ylim(min(val_y), max(val_y))
-
-
-
-Reg2 = Non_Linear_Regression()
-X = Reg2.transform(x, d)
-w = Reg2.fit(X, y)
-Y = Reg2.fit_polynomial(val_x)
-
-Eout = Reg2.E_out(poly)
-
-print("E: ", Eout)
-plt.plot(val_x, Y, 'b', label="Degree-{}".format(d))
-
-plt.legend()
-
-
-
-#plt.figure()
-#plt.plot(range(k), Ein, label="E_in")
-#plt.plot(range(k), Eout, label="E_out")
-#plt.legend()
-
-
-#print("Ein: ", Ein, "E_out: ", Eout)
-
-#try and vary parameters
-
 
 
 
